@@ -109,25 +109,25 @@ class TableEditor(QtGui.QWidget):
 class Ui_EditorMainWindow(object):
     def setupUi(self, EditorMainWindow):
         EditorMainWindow.setObjectName(_fromUtf8("EditorMainWindow"))
-        EditorMainWindow.resize(718, 650)
+        EditorMainWindow.resize(900, 750)
         EditorMainWindow.setWindowOpacity(1.0)
         EditorMainWindow.setStyleSheet(_fromUtf8(""))
         self.centralwidget = QtGui.QWidget(EditorMainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.label = QtGui.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(210, 10, 281, 31))
+        self.label.setGeometry(QtCore.QRect(10, 10, 400, 35))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Helvetica Neue"))
         font.setPointSize(24)
-        font.setBold(True)
-        font.setWeight(75)
+        font.setBold(False)
+        font.setWeight(30)
         self.label.setFont(font)
         self.label.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label.setFrameShape(QtGui.QFrame.NoFrame)
         self.label.setFrameShadow(QtGui.QFrame.Plain)
         self.label.setObjectName(_fromUtf8("label"))
         self.tabWidget = QtGui.QTabWidget(self.centralwidget)
-        self.tabWidget.setGeometry(QtCore.QRect(12, 46, 691, 371))
+        self.tabWidget.setGeometry(QtCore.QRect(10, 50, 890, 370))
         self.tabWidget.setElideMode(QtCore.Qt.ElideLeft)
         self.tabWidget.setUsesScrollButtons(False)
         self.tabWidget.setMovable(True)
@@ -160,7 +160,7 @@ class Ui_EditorMainWindow(object):
         self.Pat.setObjectName(_fromUtf8("Pat"))
         self.tabWidget.addTab(self.Pat, _fromUtf8(""))
         self.CmtgroupBox = QtGui.QGroupBox(self.centralwidget)
-        self.CmtgroupBox.setGeometry(QtCore.QRect(10, 430, 691, 180))
+        self.CmtgroupBox.setGeometry(QtCore.QRect(10, 430, 890, 180))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Helvetica"))
         font.setPointSize(18)
@@ -172,6 +172,7 @@ class Ui_EditorMainWindow(object):
         self.CmtlineEdit = QtGui.QLineEdit(self.CmtgroupBox)
         self.CmtlineEdit.setGeometry(QtCore.QRect(20, 30, 450, 100))
         self.CmtlineEdit.setObjectName(_fromUtf8("CmtLineEdit"))
+        self.CmtlineEdit.setStyleSheet("border-radius: 20px")
         self.layoutWidget = QtGui.QWidget(self.centralwidget)
         self.layoutWidget.setGeometry(QtCore.QRect(520, 460, 150, 100))
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
@@ -223,9 +224,13 @@ class Ui_EditorMainWindow(object):
         self.menuMenu.addAction(self.actionOpen)
         self.menubar.addAction(self.menuMenu.menuAction())
 
-
-        self.dacTable = TableEditor(1,1,250,300,self.DACgroupBox)
-        self.delayTable = TableEditor(1,1,250,300,self.DELAYgroupBox)
+        self.dacHelp = QtGui.QTextBrowser(self.DACgroupBox)
+        self.dacHelp.setStyleSheet("border-radius:30 px"
+                                   "background: yello")
+        self.dacTable = TableEditor(1,1,250,320,self.DACgroupBox)
+        self.dacTable.move(100,0)
+        self.delayTable = TableEditor(1,1,250,320,self.DELAYgroupBox)
+        self.delayTable.move(100,0)
         self.patTable = TableEditor(1,4,550,300,self.Pat)
         self.patTable.move(50,0)
 
@@ -240,7 +245,7 @@ class Ui_EditorMainWindow(object):
 
     def retranslateUi(self, EditorMainWindow):
         EditorMainWindow.setWindowTitle(_translate("EditorMainWindow", "MainWindow", None))
-        self.label.setText(_translate("EditorMainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-style:italic; color:#ff0000;\">parameter.dat </span><span style=\" color:#ff0000;\">Editor</span></p></body></html>", None))
+        self.label.setText(_translate("EditorMainWindow", "<html><head/><p align=\"left\"><body><span style=\" font-style:italic; color:#ff0000;\">parameter.dat </span><span style=\" color:#ff0000;\">Editor</span></p></body></html>", None))
         self.DACgroupBox.setTitle(_translate("EditorMainWindow", "DAC", None))
         self.DELAYgroupBox.setTitle(_translate("EditorMainWindow", "Delay", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.DACDelay), _translate("EditorMainWindow", "DAC/Delay", None))
@@ -283,28 +288,7 @@ class Ui_EditorMainWindow(object):
         toolBar.addWidget(savepushButton)
         self.textView.clear()
         try:
-            self.textView.append(str(self.dacTable.tableWidget.rowCount()))
-            line = QtGui.QLineEdit()
-            for i in range(0,self.dacTable.tableWidget.rowCount()):
-                line.insert(self.dacTable.tableWidget.item(i,0).text() + " ")
-                i += 1
-            self.textView.append(line.text())
-            self.textView.append(str(self.delayTable.tableWidget.rowCount()))
-            line.clear()
-            for i in range(0,self.delayTable.tableWidget.rowCount()):
-                line.insert(self.delayTable.tableWidget.item(i,0).text() + " ")
-                i += 1
-            self.textView.append(line.text())
-            self.textView.append(str(self.patTable.tableWidget.rowCount()))
-            for a in range(0,self.patTable.tableWidget.rowCount()):
-                line.clear()
-                for b in range(0,4):
-                    line.insert(self.patTable.tableWidget.item(a,b).text() + " ")
-                    b += 1
-                self.textView.append(line.text())
-                a +=1
-            if self.CmtlineEdit.isModified() == 1:
-                self.textView.append("#" + self.CmtlineEdit.text())
+            self.grab_Info()
             self.textView.setReadOnly(1)
             view.setCentralWidget(self.textView)
             view.setGeometry(QtCore.QRect(450, 100, 400,500))
@@ -315,6 +299,34 @@ class Ui_EditorMainWindow(object):
                                               "There are empty cells!",
                                               QtGui.QMessageBox.Ok)
             
+    def grab_Info(self):
+        
+        if self.CmtlineEdit.isModified() == 1:#Writing Comments
+            self.textView.append("#" + self.CmtlineEdit.text())
+        
+        self.textView.append(str(self.dacTable.tableWidget.rowCount()))#Writing # of DAC
+        line = QtGui.QLineEdit()
+        for i in range(0,self.dacTable.tableWidget.rowCount()):
+            line.insert(self.dacTable.tableWidget.item(i,0).text() + " ")#Writing DACs in one line
+            i += 1
+        self.textView.append(line.text())
+        
+        self.textView.append(str(self.delayTable.tableWidget.rowCount()))#Writing # of Delay
+        line.clear()
+        for i in range(0,self.delayTable.tableWidget.rowCount()):
+            line.insert(self.delayTable.tableWidget.item(i,0).text() + " ")
+            i += 1
+        self.textView.append(line.text())
+
+        self.textView.append(str(self.patTable.tableWidget.rowCount()))#Writing Patterns
+        for a in range(0,self.patTable.tableWidget.rowCount()):
+            line.clear()
+            for b in range(0,4):
+                line.insert(self.patTable.tableWidget.item(a,b).text() + " ")
+                b += 1
+            self.textView.append(line.text())
+            a +=1
+
 
     def close_application(self):
         choice = QtGui.QMessageBox.question(self.centralwidget, 'Exiting',
