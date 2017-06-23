@@ -114,14 +114,19 @@ class Ui_MainWindow(object):
         self.partComboBox = QtGui.QComboBox(self.centralwidget)
         self.partComboBox.setGeometry(QtCore.QRect(140, 80, 121, 51))
         self.partComboBox.setObjectName(_fromUtf8("partComboBox"))
+        self.partComboBox.addItems(QtCore.QStringList()<< "Default" << "barrel" << "emec-spe"<< "emec-std" << "fCal" << "hec")
         self.helpText = QtGui.QTextEdit(self.centralwidget)
         self.helpText.setGeometry(QtCore.QRect(20, 130, 241, 141))
-        self.helpText.setStyleSheet(_fromUtf8("background-color: rgba(25, 25, 25, 128);\n"
-"border-radius: 10px\n"
-""))
+        self.helpText.setStyleSheet(_fromUtf8("background-color: rgba(25, 25, 25, 128);"
+                                              "border-radius: 10px;"
+                                              "font-size: 13px"))
+        self.helpText.setTextColor(QtGui.QColor("white"))
+        self.helpText.setReadOnly(1)
+
         self.helpText.setFrameShape(QtGui.QFrame.StyledPanel)
         self.helpText.setFrameShadow(QtGui.QFrame.Sunken)
         self.helpText.setObjectName(_fromUtf8("helpText"))
+        self.helpText.setText("  The patterns are defined on 128 bits (1 bit per calibration line), represented by four words of 32 bits in hexadecimal format. ")
         self.patGraphicsView = QtGui.QGraphicsView(self.centralwidget)
         self.patGraphicsView.setGeometry(QtCore.QRect(270, 90, 351, 181))
         self.patGraphicsView.setObjectName(_fromUtf8("patGraphicsView"))
@@ -187,7 +192,7 @@ class Ui_MainWindow(object):
         self.menuMenu.addAction(self.actionQuit)
         self.menubar.addAction(self.menuMenu.menuAction())
 
-###########################################################################################################
+########################################################################################################
         self.cmtLineEdit = QtGui.QLineEdit(self.cmtGroupBox)
         self.cmtLineEdit.setGeometry(QtCore.QRect(10, 20, 600, 50))
         self.cmtLineEdit.setStyleSheet("font-size: 20px")
@@ -204,7 +209,8 @@ class Ui_MainWindow(object):
         channelLabels = QtCore.QStringList()<<"0-31" <<"32-63" << "64-95" << "96-127"
         self.patTable.tableWidget.setHorizontalHeaderLabels(channelLabels)
         self.patTable.move(10,0)
-        
+            
+        self.savePushButton.clicked.connect(self.save_File)
         self.abandonPushButton.clicked.connect(self.close_application)
         self.previewPushButton.clicked.connect(self.preview_File)
         self.retranslateUi(MainWindow)
@@ -233,13 +239,22 @@ class Ui_MainWindow(object):
         self.actionQuit.setText(_translate("MainWindow", "Quit", None))
 
     def save_File(self):
-        saveFileName = QtGui.QFileDialog.getSaveFileName(self.centralwidget, 'Saving parameter.dat File','parameter.dat','', '*.dat')
-        if saveFileName:
-            savefile = open(saveFileName,'w')
-            #stream = QtCore.QTextStream(openfile)
-            #stream << self.textView.toPlainText()
-            savefile.write(self.textView.toPlainText())
-            savefile.close()
+        self.textView.clear()
+        try:
+            self.grab_Info()
+            if self.textView.document().blockCount() > 1:
+                saveFileName = QtGui.QFileDialog.getSaveFileName(self.centralwidget, 'Saving parameter.dat File','parameter.dat','', '*.dat')
+                if saveFileName:
+                    savefile = open(saveFileName,'w')
+                    #stream = QtCore.QTextStream(openfile)
+                    #stream << self.textView.toPlainText()
+                    savefile.write(self.textView.toPlainText())
+                    savefile.close()
+        except AttributeError:
+            error = QtGui.QMessageBox.warning(self.centralwidget, 'Error',
+                                              "There are empty cells!",
+                                              QtGui.QMessageBox.Ok)
+
 
     def open_File(self):
         openFileName = QtGui.QFileDialog.getOpenFileName(self.centralwidget,'Open File','parameter.dat','','*.dat')
@@ -273,32 +288,47 @@ class Ui_MainWindow(object):
                                              QtGui.QMessageBox.Ok)
             
     def grab_Info(self):
-        
-        if self.cmtLineEdit.isModified() == 1:#Writing Comments
-            self.textView.append("#" + self.cmtLineEdit.text())
-        
-        self.textView.append(str(self.dacTable.tableWidget.rowCount()))#Writing # of DAC
-        line = QtGui.QLineEdit()
-        for i in range(0,self.dacTable.tableWidget.rowCount()):
-            line.insert(self.dacTable.tableWidget.item(i,0).text() + " ")#Writing DACs in one line
-            i += 1
-        self.textView.append(line.text())
-        
-        self.textView.append(str(self.delayTable.tableWidget.rowCount()))#Writing # of Delay
-        line.clear()
-        for i in range(0,self.delayTable.tableWidget.rowCount()):
-            line.insert(self.delayTable.tableWidget.item(i,0).text() + " ")
-            i += 1
-        self.textView.append(line.text())
-
-        self.textView.append(str(self.patTable.tableWidget.rowCount()))#Writing Patterns
-        for a in range(0,self.patTable.tableWidget.rowCount()):
-            line.clear()
-            for b in range(0,4):
-                line.insert(self.patTable.tableWidget.item(a,b).text() + " ")
-                b += 1
+        tables = [self.dacTable,self.delayTable,self.patTable]
+        anyEmpty = 0;
+        for i in range (0,3):
+            row = tables[i].tableWidget.rowCount()
+            col = tables[i].tableWidget.columnCount()
+            for x in range(0,row):
+                for y in range(0,col):
+                    if (tables[i].tableWidget.item(x,y).text().isEmpty()):
+                        anyEmpty = 1
+                        break
+        if anyEmpty == 0:
+            if self.cmtLineEdit.isModified() == 1:#Writing Comments
+                self.textView.append("#" + self.cmtLineEdit.text())
+            
+            self.textView.append(str(self.dacTable.tableWidget.rowCount()))#Writing # of DAC
+            line = QtGui.QLineEdit()
+            for i in range(0,self.dacTable.tableWidget.rowCount()):
+                line.insert(self.dacTable.tableWidget.item(i,0).text() + " ")#Writing DACs in one line
+                i += 1
             self.textView.append(line.text())
-            a +=1
+            
+            self.textView.append(str(self.delayTable.tableWidget.rowCount()))#Writing # of Delay
+            line.clear()
+            for i in range(0,self.delayTable.tableWidget.rowCount()):
+                line.insert(self.delayTable.tableWidget.item(i,0).text() + " ")
+                i += 1
+            self.textView.append(line.text())
+
+            self.textView.append(str(self.patTable.tableWidget.rowCount()))#Writing Patterns
+            for a in range(0,self.patTable.tableWidget.rowCount()):
+                line.clear()
+                for b in range(0,4):
+                    line.insert(self.patTable.tableWidget.item(a,b).text() + " ")
+                    b += 1
+                self.textView.append(line.text())
+                a +=1
+                    
+        else:
+            error = QtGui.QMessageBox.warning(self.centralwidget, 'Error',
+                                              "There are empty cells!",
+                                              QtGui.QMessageBox.Ok)
 
 
     def close_application(self):
