@@ -120,13 +120,16 @@ class Ui_MainWindow(object):
         self.helpText.setStyleSheet(_fromUtf8("background-color: rgba(25, 25, 25, 128);"
                                               "border-radius: 10px;"
                                               "font-size: 13px"))
-        self.helpText.setTextColor(QtGui.QColor("white"))
         self.helpText.setReadOnly(1)
 
         self.helpText.setFrameShape(QtGui.QFrame.StyledPanel)
         self.helpText.setFrameShadow(QtGui.QFrame.Sunken)
         self.helpText.setObjectName(_fromUtf8("helpText"))
-        self.helpText.setText("  The patterns are defined on 128 bits (1 bit per calibration line), represented by four words of 32 bits in hexadecimal format. ")
+        self.helpText.setText("<h3 style=color:yellow>Tips:</h3>"
+                              "<p style=color:white>If a preset parameter.dat file is preferred, just choose from the variaties from up ^^ <\p>. "
+                              "<p style=color:white>The patterns are defined on 128 bits (1 bit per calibration line), represented by four words of 32 bits in hexadecimal format.</p>"
+                              "<p style=color:white>The amplitude of the injected signal is controlled by a 16 bit DAC value at the beginning of each parameter file. It provides a voltage between 0 and 1V from which a precise input current is generated. It is to be chosen between 0 and 65535. Each calibration board is equipped with delay chips which allow to delay the pulse between 0 and 24 ns in steps of 1 ns. The delay is set as second parameter in the parameter file. The delay values can be set between 0 and 240. The calibration board parameters (DAC, delay, pulsing patterns) are loaded to the boards via the SPAC protocol.</p>")
+        self.helpText.setTextColor(QtGui.QColor("white"))
         self.patGraphicsView = QtGui.QGraphicsView(self.centralwidget)
         self.patGraphicsView.setGeometry(QtCore.QRect(270, 90, 351, 181))
         self.patGraphicsView.setObjectName(_fromUtf8("patGraphicsView"))
