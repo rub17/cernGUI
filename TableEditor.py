@@ -27,7 +27,7 @@ class TableEditor(QtGui.QWidget):
         
         self.plusBtn = QtGui.QPushButton('+',self)
         self.plusBtn.setToolTip('Adding a row')
-        self.plusBtn.resize(100,50)
+        self.plusBtn.resize(self.plusBtn.sizeHint())
         #self.plusBtn.setStyleSheet("background: orange")
 
         
@@ -38,6 +38,7 @@ class TableEditor(QtGui.QWidget):
 
         
         self.layoutWidget = QtGui.QWidget(self)
+        self.layoutWidget.resize(50,100)
         self.layoutWidget.move(self.sizeX+10, 30)
         self.verticalLayout = QtGui.QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setMargin(0)

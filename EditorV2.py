@@ -111,12 +111,12 @@ class Ui_MainWindow(object):
 "background-color: white"))
         self.patGroupBox.setObjectName(_fromUtf8("patGroupBox"))
         self.tabWidget.addTab(self.patTab, _fromUtf8(""))
-        self.partComboBox = QtGui.QComboBox(self.centralwidget)
-        self.partComboBox.setGeometry(QtCore.QRect(140, 80, 121, 51))
-        self.partComboBox.setObjectName(_fromUtf8("partComboBox"))
-        self.partComboBox.addItems(QtCore.QStringList()<< "Default" << "barrel" << "emec-spe"<< "emec-std" << "fCal" << "hec")
+        #self.partComboBox = QtGui.QComboBox(self.centralwidget)
+        #self.partComboBox.setGeometry(QtCore.QRect(140, 80, 121, 51))
+        #self.partComboBox.setObjectName(_fromUtf8("partComboBox"))
+        #self.partComboBox.addItems(QtCore.QStringList()<< "Default" << "barrel" << "emec-spe"<< "emec-std" << "fCal" << "hec")
         self.helpText = QtGui.QTextEdit(self.centralwidget)
-        self.helpText.setGeometry(QtCore.QRect(20, 130, 241, 141))
+        self.helpText.setGeometry(QtCore.QRect(20, 130, 300, 141))
         self.helpText.setStyleSheet(_fromUtf8("background-color: rgba(25, 25, 25, 128);"
                                               "border-radius: 10px;"
                                               "font-size: 13px"))
@@ -126,27 +126,28 @@ class Ui_MainWindow(object):
         self.helpText.setFrameShadow(QtGui.QFrame.Sunken)
         self.helpText.setObjectName(_fromUtf8("helpText"))
         self.helpText.setText("<h3 style=color:yellow>Tips:</h3>"
-                              "<p style=color:white>If a preset parameter.dat file is preferred, just choose from the variaties from up ^^ <\p>. "
+                              "<p style=color:white>If a preset parameter.dat file is preferred, just open an existing one or template. <\p>. "
                               "<p style=color:white>The patterns are defined on 128 bits (1 bit per calibration line), represented by four words of 32 bits in hexadecimal format.</p>"
                               "<p style=color:white>The amplitude of the injected signal is controlled by a 16 bit DAC value at the beginning of each parameter file. It provides a voltage between 0 and 1V from which a precise input current is generated. It is to be chosen between 0 and 65535. Each calibration board is equipped with delay chips which allow to delay the pulse between 0 and 24 ns in steps of 1 ns. The delay is set as second parameter in the parameter file. The delay values can be set between 0 and 240. The calibration board parameters (DAC, delay, pulsing patterns) are loaded to the boards via the SPAC protocol.</p>")
         self.helpText.setTextColor(QtGui.QColor("white"))
+        self.helpText.verticalScrollBar().setStyleSheet("background-color: white;")
+        
         self.patGraphicsView = QtGui.QGraphicsView(self.centralwidget)
-        self.patGraphicsView.setGeometry(QtCore.QRect(270, 90, 351, 181))
+        self.patGraphicsView.setGeometry(QtCore.QRect(330, 90, 290, 181))
         self.patGraphicsView.setObjectName(_fromUtf8("patGraphicsView"))
-        self.tempLabel = QtGui.QLabel(self.centralwidget)
-        self.tempLabel.setGeometry(QtCore.QRect(20, 90, 111, 31))
+        self.pwdInfo = QtGui.QLineEdit(self.centralwidget)
+        self.pwdInfo.setGeometry(QtCore.QRect(20, 90, 300, 31))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Helvetica"))
         font.setPointSize(14)
         font.setBold(False)
         font.setWeight(50)
-        self.tempLabel.setFont(font)
-        self.tempLabel.setStyleSheet(_fromUtf8("color: rgb(255, 255, 255);\n"
+        self.pwdInfo.setFont(font)
+        self.pwdInfo.setStyleSheet(_fromUtf8("color: rgb(255, 255, 0);\n"
 "background-color: rgba(0, 0, 0, 128);\n"
 "border-radius: 5px;\n"
 ""))
-        self.tempLabel.setFrameShape(QtGui.QFrame.NoFrame)
-        self.tempLabel.setObjectName(_fromUtf8("tempLabel"))
+        self.pwdInfo.setObjectName(_fromUtf8("pwdInfo"))
         self.savePushButton = QtGui.QPushButton(self.centralwidget)
         self.savePushButton.setGeometry(QtCore.QRect(410, 680, 110, 32))
         self.savePushButton.setObjectName(_fromUtf8("savePushButton"))
@@ -201,6 +202,19 @@ class Ui_MainWindow(object):
         self.cmtLineEdit.setStyleSheet("font-size: 20px")
         self.textView = QtGui.QTextEdit()
         
+        self.hexToBin = QtGui.QLabel(self.patTab)
+        self.hexToBin.setGeometry(QtCore.QRect(10, 245, 500, 30))
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Helvetica"))
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setWeight(75)
+        self.hexToBin.setFont(font)
+        self.hexToBin.setStyleSheet(_fromUtf8("color: rgb(255, 255, 0);\n"
+                                               "background-color: rgba(0, 0, 0, 128);\n"
+                                               "border-radius: 5px;\n"
+                                               ""))
+        
         self.dacTable = TableEditor(1,1,200,250,self.dacDelay)
         self.dacTable.move(20,0)
         self.dacTable.tableWidget.setHorizontalHeaderLabels(QtCore.QStringList()<<"DAC Value")
@@ -208,14 +222,16 @@ class Ui_MainWindow(object):
         self.delayTable = TableEditor(1,1,200,250,self.dacDelay)
         self.delayTable.move(320,0)
         self.delayTable.tableWidget.setHorizontalHeaderLabels(QtCore.QStringList()<<"Delay Values")
-        self.patTable = TableEditor(1,4,500,250,self.patTab)
-        channelLabels = QtCore.QStringList()<<"0-31" <<"32-63" << "64-95" << "96-127"
+        self.patTable = TableEditor(1,4,500,220,self.patTab)
+        channelLabels = QtCore.QStringList()<<"31-0" <<"63-32" << "95-64" << "127-96"
         self.patTable.tableWidget.setHorizontalHeaderLabels(channelLabels)
         self.patTable.move(10,0)
             
         self.savePushButton.clicked.connect(self.save_File)
         self.abandonPushButton.clicked.connect(self.close_application)
         self.previewPushButton.clicked.connect(self.preview_File)
+        self.patTable.tableWidget.cellDoubleClicked.connect(self.convertHex)
+        
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -230,11 +246,12 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.dacDelay), _translate("MainWindow", "DAC/Delay", None))
         self.patGroupBox.setTitle(_translate("MainWindow", "Patterns", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.patTab), _translate("MainWindow", "Patterns", None))
-        self.tempLabel.setText(_translate("MainWindow", "    Templates", None))
+        self.pwdInfo.setText(QtCore.QString(QtCore.QDir.currentPath()))
+        self.hexToBin.setText(_translate("MainWindow", "Bonjour!", None))
         self.savePushButton.setText(_translate("MainWindow", "Save", None))
         self.previewPushButton.setText(_translate("MainWindow", "Preview", None))
         self.btmLabel.setText(_translate("MainWindow", "Related Documents:", None))
-        self.linkLabel.setText(_translate("MainWindow", "<a href=\"https://goo.gl/D1Bdhy\" style=\"color: red;\">https://goo.gl/D1Bdhy</a>", None))
+        self.linkLabel.setText(_translate("MainWindow", "<a href=\"https://atlasop.cern.ch/twiki/bin/view/LAr/LArCalibration\" style=\"color: red;\">TwikiPage</a>", None))
         self.menuMenu.setTitle(_translate("MainWindow", "Files", None))
         self.actionOpen.setText(_translate("MainWindow", "Open", None))
         self.actionSave.setText(_translate("MainWindow", "Save..", None))
@@ -334,6 +351,12 @@ class Ui_MainWindow(object):
                                               QtGui.QMessageBox.Ok)
 
 
+    def convertHex(self):
+        hexNumber = self.patTable.tableWidget.currentItem().text()
+        bin = QtCore.QString.number(hexNumber.toInt(0)[0],2)
+        self.hexToBin.setText("(000)" + bin)
+
+    
     def close_application(self):
         choice = QtGui.QMessageBox.question(self.centralwidget, 'Exiting',
                                             "Are you sure to quit?",
