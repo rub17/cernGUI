@@ -126,14 +126,14 @@ class Ui_MainWindow(object):
         self.helpText.setFrameShadow(QtGui.QFrame.Sunken)
         self.helpText.setObjectName(_fromUtf8("helpText"))
         self.helpText.setText("<h3 style=color:yellow>Tips:</h3>"
-                              "<p style=color:white>If a preset parameter.dat file is preferred, just open an existing one or template. <\p>. "
+                              "<p style=color:white>If a preset parameter.dat file is preferred, just open an existing one or template. <\p> "
                               "<p style=color:white>The patterns are defined on 128 bits (1 bit per calibration line), represented by four words of 32 bits in hexadecimal format.</p>"
-                              "<p style=color:white>The amplitude of the injected signal is controlled by a 16 bit DAC value at the beginning of each parameter file. It provides a voltage between 0 and 1V from which a precise input current is generated. It is to be chosen between 0 and 65535. Each calibration board is equipped with delay chips which allow to delay the pulse between 0 and 24 ns in steps of 1 ns. The delay is set as second parameter in the parameter file. The delay values can be set between 0 and 240. The calibration board parameters (DAC, delay, pulsing patterns) are loaded to the boards via the SPAC protocol.</p>")
+                              "<p style=color:white>What kind of bagel can fly?</p>"
+                              "<p style=color:white>\n\n\n\n A plain begal.</p>")
         self.helpText.setTextColor(QtGui.QColor("white"))
         self.helpText.verticalScrollBar().setStyleSheet("background-color: white;")
-        
         self.patGraphicsView = QtGui.QGraphicsView(self.centralwidget)
-        self.patGraphicsView.setGeometry(QtCore.QRect(330, 90, 290, 181))
+        self.patGraphicsView.setGeometry(QtCore.QRect(330, 130, 290, 141))
         self.patGraphicsView.setObjectName(_fromUtf8("patGraphicsView"))
         self.pwdInfo = QtGui.QLineEdit(self.centralwidget)
         self.pwdInfo.setGeometry(QtCore.QRect(20, 90, 300, 31))
@@ -197,6 +197,22 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuMenu.menuAction())
 
 ########################################################################################################
+        self.authorGroupBox = QtGui.QGroupBox(self.centralwidget)
+        self.authorGroupBox.setGeometry(QtCore.QRect(330,90,290,30))
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Helvetica"))
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.authorGroupBox.setFont(font)
+        self.authorGroupBox.setStyleSheet(_fromUtf8("border: 2px solid white;\n"
+                                                 "border-radius: 10px;\n"
+                                                 "background-color: white"))
+        self.authorGroupBox.setObjectName(_fromUtf8("authorGroupBox"))
+        
+        self.authorLineEdit = QtGui.QLineEdit(self.authorGroupBox)
+        self.authorLineEdit.setGeometry(QtCore.QRect(70,0,200,25))
+        
         self.cmtLineEdit = QtGui.QLineEdit(self.cmtGroupBox)
         self.cmtLineEdit.setGeometry(QtCore.QRect(10, 20, 600, 50))
         self.cmtLineEdit.setStyleSheet("font-size: 20px")
@@ -239,6 +255,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.cmtGroupBox.setTitle(_translate("MainWindow", "Comments", None))
+        self.authorGroupBox.setTitle(_translate("MainWindow", "Author:", None))
         self.titleLabel.setText(_translate("MainWindow", "Calibration Editor", None))
         self.abandonPushButton.setText(_translate("MainWindow", "Abandon", None))
         self.dacGroupBox.setTitle(_translate("MainWindow", "DAC", None))
@@ -277,16 +294,24 @@ class Ui_MainWindow(object):
 
 
     def open_File(self):
+        self.dacTable.tableWidget.blockSignals(True)
+        self.delayTable.tableWidget.blockSignals(True)
+        self.patTable.tableWidget.blockSignals(True)
         openFileName = QtGui.QFileDialog.getOpenFileName(self.centralwidget,'Open File','parameter.dat','','*.dat')
         if openFileName:
             file = open(openFileName,'r')
             with file:
+                position = 0
                 text = file.readlines()
                 textList = QtCore.QStringList()
-                dacNumber = int(text[0])
-                delayNumber = int(text[2])
-                patNumber = int(text[4])
-                textList = text[1].split(" ")
+                if text[0].startswith('#'): #Skipping comments
+                    position = 1
+                if text[1].startswith('#'):
+                    position = 2
+                dacNumber = int(text[0+position])
+                delayNumber = int(text[2+position])
+                patNumber = int(text[4+position])
+                textList = text[1+position].split(" ")
                 self.dacTable.tableWidget.setRowCount(dacNumber)
                 self.delayTable.tableWidget.setRowCount(delayNumber)
                 self.patTable.tableWidget.setRowCount(patNumber)
@@ -296,7 +321,7 @@ class Ui_MainWindow(object):
                     self.dacTable.tableWidget.setItem(i,0,values)
                     i += 1
 
-                textList = text[3].split(" ")
+                textList = text[3+position].split(" ")
                 for i in range(0,delayNumber):
                     values = QtGui.QTableWidgetItem("0")
                     values.setText(textList[i])
@@ -304,14 +329,19 @@ class Ui_MainWindow(object):
                     i += 1
 
                 for x in range(0,patNumber):
-                    textList = text[x + 5].split(" ")
+                    textList = text[x + 5 +position].split(" ")
                     for y in range(0,4):
                         values = QtGui.QTableWidgetItem("0")
                         values.setText(textList[y])
                         self.patTable.tableWidget.setItem(x,y,values)
                         y += 1
                     x +=1
-
+                self.dacTable.checkTableInt()
+                self.delayTable.checkTableInt()
+                self.patTable.checkTableHex()
+                self.dacTable.tableWidget.blockSignals(False)
+                self.delayTable.tableWidget.blockSignals(False)
+                self.patTable.tableWidget.blockSignals(False)
     def preview_File(self):
         view = QtGui.QMainWindow(self.centralwidget)
         savepushButton = QtGui.QPushButton('Save',view)
@@ -347,7 +377,8 @@ class Ui_MainWindow(object):
         if anyEmpty == 0:
             if self.cmtLineEdit.isModified() == 1:#Writing Comments
                 self.textView.append("#" + self.cmtLineEdit.text())
-            
+            if self.authorLineEdit.isModified() == 1:#Writing author's name
+                self.textView.append("#Edited by:" + self.authorLineEdit.text())
             self.textView.append(str(self.dacTable.tableWidget.rowCount()))#Writing # of DAC
             line = QtGui.QLineEdit()
             for i in range(0,self.dacTable.tableWidget.rowCount()):

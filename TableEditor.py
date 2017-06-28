@@ -62,7 +62,28 @@ class TableEditor(QtGui.QWidget):
     def delRow(self):
         rowPosition = self.tableWidget.rowCount()
         self.tableWidget.removeRow(rowPosition-1)
-       
+    
+    def checkTableInt(self):
+        for i in range (0,self.tableWidget.rowCount()):
+            state = self.intValidator.validate(self.tableWidget.item(i,0).text(),0)[0]
+            if state == QtGui.QValidator.Acceptable:
+                self.tableWidget.item(i,0).setBackgroundColor(QtGui.QColor(152,251,152))
+            else:
+                self.tableWidget.item(i,0).setBackgroundColor(QtGui.QColor(255, 128, 128))
+                self.tableWidget.item(i,0).setToolTip('Integer only please.')
+            i += 1
+
+    def checkTableHex(self):
+        for x in range (0,self.tableWidget.rowCount()):
+            for y in range (0,self.tableWidget.columnCount()):
+                state = self.hexValidator.validate(self.tableWidget.item(x,y).text(),0)[0]
+                if state == QtGui.QValidator.Acceptable:
+                    self.tableWidget.item(x,y).setBackgroundColor(QtGui.QColor(152,251,152))
+                else:
+                    self.tableWidget.item(x,y).setBackgroundColor(QtGui.QColor(255, 128, 128))
+                    self.tableWidget.item(x,y).setToolTip('Integer only please.')
+                y += 1
+        x += 1
     def checkInt(self):
         currentRow = self.tableWidget.currentRow()
         currentCol = self.tableWidget.currentColumn()
