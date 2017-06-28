@@ -280,11 +280,37 @@ class Ui_MainWindow(object):
         openFileName = QtGui.QFileDialog.getOpenFileName(self.centralwidget,'Open File','parameter.dat','','*.dat')
         if openFileName:
             file = open(openFileName,'r')
-            #input = QtCore.QTextStream(openFileName)
-            string = QtCore.QString()
             with file:
-                text = file.read()
-                print text
+                text = file.readlines()
+                textList = QtCore.QStringList()
+                dacNumber = int(text[0])
+                delayNumber = int(text[2])
+                patNumber = int(text[4])
+                textList = text[1].split(" ")
+                self.dacTable.tableWidget.setRowCount(dacNumber)
+                self.delayTable.tableWidget.setRowCount(delayNumber)
+                self.patTable.tableWidget.setRowCount(patNumber)
+                for i in range(0,dacNumber):
+                    values = QtGui.QTableWidgetItem("0")
+                    values.setText(textList[i])
+                    self.dacTable.tableWidget.setItem(i,0,values)
+                    i += 1
+
+                textList = text[3].split(" ")
+                for i in range(0,delayNumber):
+                    values = QtGui.QTableWidgetItem("0")
+                    values.setText(textList[i])
+                    self.delayTable.tableWidget.setItem(i,0,values)
+                    i += 1
+
+                for x in range(0,patNumber):
+                    textList = text[x + 5].split(" ")
+                    for y in range(0,4):
+                        values = QtGui.QTableWidgetItem("0")
+                        values.setText(textList[y])
+                        self.patTable.tableWidget.setItem(x,y,values)
+                        y += 1
+                    x +=1
 
     def preview_File(self):
         view = QtGui.QMainWindow(self.centralwidget)
