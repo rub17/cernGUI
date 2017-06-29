@@ -107,10 +107,6 @@ class Ui_MainWindow(object):
 "background-color: white"))
         self.patGroupBox.setObjectName(_fromUtf8("patGroupBox"))
         self.tabWidget.addTab(self.patTab, _fromUtf8(""))
-        #self.partComboBox = QtGui.QComboBox(self.centralwidget)
-        #self.partComboBox.setGeometry(QtCore.QRect(140, 80, 121, 51))
-        #self.partComboBox.setObjectName(_fromUtf8("partComboBox"))
-        #self.partComboBox.addItems(QtCore.QStringList()<< "Default" << "barrel" << "emec-spe"<< "emec-std" << "fCal" << "hec")
         self.helpText = QtGui.QTextEdit(self.centralwidget)
         self.helpText.setGeometry(QtCore.QRect(20, 130, 300, 141))
         self.helpText.setStyleSheet(_fromUtf8("background-color: rgba(25, 25, 25, 128);"
@@ -279,15 +275,12 @@ class Ui_MainWindow(object):
                 saveFileName = QtGui.QFileDialog.getSaveFileName(self.centralwidget, 'Saving parameter.dat File','parameter.dat','', '*.dat')
                 if saveFileName:
                     savefile = open(saveFileName,'w')
-                    #stream = QtCore.QTextStream(openfile)
-                    #stream << self.textView.toPlainText()
                     savefile.write(self.textView.toPlainText())
                     savefile.close()
         except AttributeError:
             error = QtGui.QMessageBox.warning(self.centralwidget, 'Error',
                                               "There are empty cells!",
                                               QtGui.QMessageBox.Ok)
-
 
     def open_File(self):
         self.dacTable.tableWidget.blockSignals(True)
@@ -338,6 +331,7 @@ class Ui_MainWindow(object):
                 self.dacTable.tableWidget.blockSignals(False)
                 self.delayTable.tableWidget.blockSignals(False)
                 self.patTable.tableWidget.blockSignals(False)
+
     def preview_File(self):
         view = QtGui.QMainWindow(self.centralwidget)
         savepushButton = QtGui.QPushButton('Save',view)
@@ -403,13 +397,11 @@ class Ui_MainWindow(object):
                                               "There are empty cells!",
                                               QtGui.QMessageBox.Ok)
 
-
     def convertHex(self):
         hexNumber = self.patTable.tableWidget.currentItem().text()
-        bin = QtCore.QString.number(hexNumber.toInt(0)[0],2)
+        bin = QtCore.QString.number(hexNumber.toULong(0)[0],2)
         self.hexToBin.setText("(000)" + bin)
 
-    
     def close_application(self):
         choice = QtGui.QMessageBox.question(self.centralwidget, 'Exiting',
                                             "Are you sure to quit?",
@@ -418,6 +410,7 @@ class Ui_MainWindow(object):
             sys.exit()
         else:
             pass
+
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)

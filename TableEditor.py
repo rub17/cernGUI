@@ -84,6 +84,7 @@ class TableEditor(QtGui.QWidget):
                     self.tableWidget.item(x,y).setToolTip('Integer only please.')
                 y += 1
         x += 1
+    
     def checkInt(self):
         currentRow = self.tableWidget.currentRow()
         currentCol = self.tableWidget.currentColumn()
