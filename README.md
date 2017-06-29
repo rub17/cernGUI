@@ -5,6 +5,7 @@ informative parameter.dat files. The current decision for the residence of the p
 will be under the __LAr/SuperExpert__ Tab inside the calibration panel.
 
 ## Dependecies:
+Python 2.7
 PyQt >= 4
 
 ## Current State:
