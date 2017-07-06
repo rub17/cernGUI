@@ -1,11 +1,17 @@
-#Title: Calibration Editor
-#Author: Runyu Bi
-#Purpose: GUI for editing parameter.dat files.
 
 from PyQt4 import QtCore, QtGui
 
 from TableEditor import TableEditor
 
+# ------------------------------------------------------------------------------------
+#  Title: Calibration Editor
+
+#  Runyu Bi 06.07.2017 (Pittsburgh)
+
+# ------------------------------------------------------------------------------------                             
+#  GUI for editing parameter.dat files.
+
+# ------------------------------------------------------------------------------------   
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
