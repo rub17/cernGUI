@@ -125,14 +125,23 @@ class Ui_MainWindow(object):
         self.helpText.setObjectName(_fromUtf8("helpText"))
         self.helpText.setText("<h3 style=color:yellow>Tips:</h3>"
                               "<p style=color:white>If a preset parameter.dat file is preferred, just open an existing one or template. <\p> "
-                              "<p style=color:white>The patterns are defined on 128 bits (1 bit per calibration line), represented by four words of 32 bits in hexadecimal format.</p>"
-                              "<p style=color:white>What kind of bagel can fly?</p>"
-                              "<p style=color:white>\n\n\n\n A plain begal.</p>")
+                              "<p style=color:white>Double click a cell in pattern to convert Hex# into Binary</p>"
+                              "<p style=color:white>The patterns are defined on 128 bits (1 bit per calibration line), represented by four words of 32 bits in hexadecimal format.</p>")
         self.helpText.setTextColor(QtGui.QColor("white"))
         self.helpText.verticalScrollBar().setStyleSheet("background-color: white;")
         self.patGraphicsView = QtGui.QGraphicsView(self.centralwidget)
         self.patGraphicsView.setGeometry(QtCore.QRect(330, 130, 290, 141))
         self.patGraphicsView.setObjectName(_fromUtf8("patGraphicsView"))
+        self.scene = QtGui.QGraphicsScene()
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Helvetica"))
+        font.setPointSize(18)
+        font.setBold(True)
+        font.setWeight(50)
+        self.scene.addText("Please:\n"
+                           "Be careful NOT to overwrite \n"
+                           "other parameter.dat files!",font)
+        self.patGraphicsView.setScene(self.scene)
         self.pwdInfo = QtGui.QLineEdit(self.centralwidget)
         self.pwdInfo.setGeometry(QtCore.QRect(20, 90, 300, 31))
         font = QtGui.QFont()
@@ -261,7 +270,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.dacDelay), _translate("MainWindow", "DAC/Delay", None))
         self.patGroupBox.setTitle(_translate("MainWindow", "Patterns", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.patTab), _translate("MainWindow", "Patterns", None))
-        self.pwdInfo.setText(QtCore.QString(QtCore.QDir.currentPath()))
+        self.pwdInfo.setText("Current Path: " + QtCore.QString(QtCore.QDir.currentPath()))
         self.hexToBin.setText(_translate("MainWindow", "Bonjour!", None))
         self.savePushButton.setText(_translate("MainWindow", "Save", None))
         self.previewPushButton.setText(_translate("MainWindow", "Preview", None))
@@ -276,6 +285,9 @@ class Ui_MainWindow(object):
     def save_File(self):
         self.textView.clear()
         try:
+            dialog = QtGui.QMessageBox.warning(self.centralwidget, 'Warning',
+            "Please: only save into the UsersArea!!!",QtGui.QMessageBox.Ok)
+            
             self.grab_Info()
             if self.textView.document().blockCount() > 1:
                 saveFileName = QtGui.QFileDialog.getSaveFileName(self.centralwidget, 'Saving parameter.dat File','parameter.dat','', '*.dat')
@@ -404,9 +416,27 @@ class Ui_MainWindow(object):
                                               QtGui.QMessageBox.Ok)
 
     def convertHex(self):
+        hex2bin_map = {"0":"0000",
+                       "1":"0001",
+                       "2":"0010",
+                       "3":"0011",
+                       "4":"0100",
+                       "5":"0101",
+                       "6":"0110",    
+                       "7":"0111",
+                       "8":"1000",
+                       "9":"1001",
+                       "A":"1010",
+                       "B":"1011",
+                       "C":"1100",
+                       "D":"1101",
+                       "E":"1110",
+                       "F":"1111"}
         hexNumber = self.patTable.tableWidget.currentItem().text()
-        bin = QtCore.QString.number(hexNumber.toULong(0)[0],2)
-        self.hexToBin.setText("(000)" + bin)
+        #bin = QtCore.QString.number(hexNumber.toULong(0)[0],2)
+        #self.hexToBin.setText("(000)" + bin)
+        value =  str(hexNumber)[2:]
+        self.hexToBin.setText(" ".join(hex2bin_map[i] for i in value))
 
     def close_application(self):
         choice = QtGui.QMessageBox.question(self.centralwidget, 'Exiting',
