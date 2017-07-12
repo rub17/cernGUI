@@ -146,7 +146,7 @@ class Ui_MainWindow(object):
         self.pwdInfo.setGeometry(QtCore.QRect(20, 90, 300, 31))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Helvetica"))
-        font.setPointSize(14)
+        font.setPointSize(10)
         font.setBold(False)
         font.setWeight(50)
         self.pwdInfo.setFont(font)
@@ -165,7 +165,7 @@ class Ui_MainWindow(object):
         self.btmLabel.setGeometry(QtCore.QRect(30, 680, 131, 21))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Helvetica"))
-        font.setPointSize(14)
+        font.setPointSize(12)
         self.btmLabel.setFont(font)
         self.btmLabel.setOpenExternalLinks(False)
         self.btmLabel.setObjectName(_fromUtf8("btmLabel"))
@@ -196,6 +196,7 @@ class Ui_MainWindow(object):
         self.actionAbout.setObjectName(_fromUtf8("actionAbout"))
         self.actionQuit = QtGui.QAction(MainWindow)
         self.actionQuit.setObjectName(_fromUtf8("actionQuit"))
+        self.actionQuit.triggered.connect(self.close_application)
         self.menuMenu.addAction(self.actionOpen)
         self.menuMenu.addAction(self.actionSave)
         self.menuMenu.addSeparator()
@@ -203,7 +204,7 @@ class Ui_MainWindow(object):
         self.menuMenu.addAction(self.actionQuit)
         self.menubar.addAction(self.menuMenu.menuAction())
 
-########################################################################################################
+##############################################################################################
         self.authorGroupBox = QtGui.QGroupBox(self.centralwidget)
         self.authorGroupBox.setGeometry(QtCore.QRect(330,90,290,30))
         font = QtGui.QFont()

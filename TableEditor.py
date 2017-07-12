@@ -13,6 +13,7 @@ class TableEditor(QtGui.QWidget):
     
     def initUI(self):
         self.intValidator = QtGui.QIntValidator()
+        self.intValidator.setRange(0,500)
         self.hexValidator = QtGui.QRegExpValidator(QtCore.QRegExp("0x[0-9A-F]{8}"))
         
         self.tableWidget = QtGui.QTableWidget(self.row,self.col,self)
