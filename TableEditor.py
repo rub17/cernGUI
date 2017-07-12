@@ -12,10 +12,8 @@ class TableEditor(QtGui.QWidget):
         self.initUI()
     
     def initUI(self):
-        self.intValidatorDAC = QtGui.QIntValidator()
-        self.intValidatorDAC.setRange(0,65535)
-        self.intValidatorDelay = QtGui.QIntValidator()
-        self.intValidatorDelay.setRange(0,24)
+        self.intValidator = QtGui.QIntValidator()
+        self.intValidator.setRange(0,65535)
         self.hexValidator = QtGui.QRegExpValidator(QtCore.QRegExp("0x[0-9A-F]{8}"))
         
         self.tableWidget = QtGui.QTableWidget(self.row,self.col,self)
