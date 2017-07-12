@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
         self.scene = QtGui.QGraphicsScene()
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Helvetica"))
-        font.setPointSize(14)
+        font.setPointSize(15)
         font.setBold(True)
         font.setWeight(50)
         self.scene.addText("Please:\n"
