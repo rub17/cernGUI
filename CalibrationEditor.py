@@ -324,14 +324,14 @@ class Ui_MainWindow(object):
                 self.patTable.tableWidget.setRowCount(patNumber)
                 for i in range(0,dacNumber):
                     values = QtGui.QTableWidgetItem("0")
-                    values.setText(textList[i])
+                    values.setText(textList[i].strip())
                     self.dacTable.tableWidget.setItem(i,0,values)
                     i += 1
 
                 textList = text[3+position].split(" ")
                 for i in range(0,delayNumber):
                     values = QtGui.QTableWidgetItem("0")
-                    values.setText(textList[i])
+                    values.setText(textList[i].strip())
                     self.delayTable.tableWidget.setItem(i,0,values)
                     i += 1
 
@@ -339,7 +339,7 @@ class Ui_MainWindow(object):
                     textList = text[x + 5 +position].split(" ")
                     for y in range(0,4):
                         values = QtGui.QTableWidgetItem("0")
-                        values.setText(textList[y])
+                        values.setText(textList[y].strip())
                         self.patTable.tableWidget.setItem(x,y,values)
                         y += 1
                     x +=1
@@ -387,29 +387,36 @@ class Ui_MainWindow(object):
                 self.textView.append("#" + self.cmtLineEdit.text())
             if self.authorLineEdit.isModified() == 1:#Writing author's name
                 self.textView.append("#Edited by:" + self.authorLineEdit.text())
+        #Writing DAC:
             self.textView.append(str(self.dacTable.tableWidget.rowCount()))#Writing # of DAC
-            line = QtGui.QLineEdit()
+            list = []
             for i in range(0,self.dacTable.tableWidget.rowCount()):
-                line.insert(self.dacTable.tableWidget.item(i,0).text() + " ")#Writing DACs in one line
+                list.append(str(self.dacTable.tableWidget.item(i,0).text()))#Writing DACs in one line
                 i += 1
-            self.textView.append(line.text())
-            
-            self.textView.append(str(self.delayTable.tableWidget.rowCount()))#Writing # of Delay
-            line.clear()
-            for i in range(0,self.delayTable.tableWidget.rowCount()):
-                line.insert(self.delayTable.tableWidget.item(i,0).text() + " ")
-                i += 1
-            self.textView.append(line.text())
 
+            writeIn = " ".join(list)
+            self.textView.append(writeIn)
+        #Writing Delay:
+            self.textView.append(str(self.delayTable.tableWidget.rowCount()))#Writing # of Delay
+            list = []
+            for i in range(0,self.delayTable.tableWidget.rowCount()):
+                list.append(str(self.delayTable.tableWidget.item(i,0).text()))
+                i += 1
+            
+            writeIn = " ".join(list)
+            self.textView.append(writeIn)
+        #Writing Patterns:
             self.textView.append(str(self.patTable.tableWidget.rowCount()))#Writing Patterns
             for a in range(0,self.patTable.tableWidget.rowCount()):
-                line.clear()
+                #line.clear()
+                list =[]
                 for b in range(0,4):
-                    line.insert(self.patTable.tableWidget.item(a,b).text() + " ")
+                    list.append(str(self.patTable.tableWidget.item(a,b).text()))
                     b += 1
-                self.textView.append(line.text())
+                writeIn = " ".join(list)
+                self.textView.append(writeIn)
                 a +=1
-                    
+        
         else:
             error = QtGui.QMessageBox.warning(self.centralwidget, 'Error',
                                               "There are empty cells!",
