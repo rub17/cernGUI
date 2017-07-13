@@ -127,7 +127,7 @@ class Ui_MainWindow(object):
         self.helpText.setText("<h3 style=color:yellow>Tips:</h3>"
                               "<p style=color:orange>Double click a cell in pattern table to convert hex# into binary!</p>"
                               "<p style=color:white>The DAC value should be between <em>(0,65535)</em>, and the Delay value should be between <i>(0,240)</i> <\p> "
-                              "<p style=color:white>The patterns are defined on 128 bits (1 bit per calibration line), represented by four words of 32 bits in hexadecimal format.</p>")
+                              "<p style=color:orange>When cell turns red, the input value is not in the valid format. Hover on the cell to get a HINT. </p>")
         self.helpText.setTextColor(QtGui.QColor("white"))
         self.helpText.verticalScrollBar().setStyleSheet("background-color: white;")
         self.patGraphicsView = QtGui.QGraphicsView(self.centralwidget)
@@ -311,6 +311,11 @@ class Ui_MainWindow(object):
             with file:
                 position = 0
                 text = file.readlines()
+                for idx,val in enumerate(text):
+                    if text[idx].startswith('#'):
+                        text.remove(val)
+                text = [element.upper() for element in text]
+                text = [element.replace("X","x") for element in text]
                 textList = QtCore.QStringList()
                 if text[0].startswith('#'): #Skipping comments
                     position = 1
@@ -389,7 +394,9 @@ class Ui_MainWindow(object):
             if self.authorLineEdit.isModified() == 1:#Writing author's name
                 self.textView.append("#Edited by:" + self.authorLineEdit.text())
         #Writing DAC:
+            self.textView.append("#Number of DAC values:")
             self.textView.append(str(self.dacTable.tableWidget.rowCount()))#Writing # of DAC
+            self.textView.append("#DAC values:")
             list = []
             for i in range(0,self.dacTable.tableWidget.rowCount()):
                 list.append(str(self.dacTable.tableWidget.item(i,0).text()))#Writing DACs in one line
@@ -398,7 +405,9 @@ class Ui_MainWindow(object):
             writeIn = " ".join(list)
             self.textView.append(writeIn)
         #Writing Delay:
+            self.textView.append("#Number of Delay values:")
             self.textView.append(str(self.delayTable.tableWidget.rowCount()))#Writing # of Delay
+            self.textView.append("#Delay values:")
             list = []
             for i in range(0,self.delayTable.tableWidget.rowCount()):
                 list.append(str(self.delayTable.tableWidget.item(i,0).text()))
@@ -407,7 +416,9 @@ class Ui_MainWindow(object):
             writeIn = " ".join(list)
             self.textView.append(writeIn)
         #Writing Patterns:
+            self.textView.append("#Number of Partterns:")
             self.textView.append(str(self.patTable.tableWidget.rowCount()))#Writing Patterns
+            self.textView.append("#Partterns:")
             for a in range(0,self.patTable.tableWidget.rowCount()):
                 #line.clear()
                 list =[]
@@ -415,6 +426,8 @@ class Ui_MainWindow(object):
                     list.append(str(self.patTable.tableWidget.item(a,b).text()))
                     b += 1
                 writeIn = " ".join(list)
+                writeIn = writeIn.upper()
+                writeIn = writeIn.replace("X","x")
                 self.textView.append(writeIn)
                 a +=1
         
@@ -440,7 +453,13 @@ class Ui_MainWindow(object):
                            "C":"1100",
                            "D":"1101",
                            "E":"1110",
-                           "F":"1111"}
+                           "F":"1111",
+                           "a":"1010",
+                           "b":"1011",
+                           "c":"1100",
+                           "d":"1101",
+                           "e":"1110",
+                           "f":"1111"}
             hexNumber = self.patTable.tableWidget.currentItem().text()
             value =  str(hexNumber)[2:]
             self.hexToBin.setText(" ".join(hex2bin_map[i] for i in value))
