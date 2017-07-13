@@ -82,7 +82,7 @@ class TableEditor(QtGui.QWidget):
                     self.tableWidget.item(x,y).setBackgroundColor(QtGui.QColor(152,251,152))
                 else:
                     self.tableWidget.item(x,y).setBackgroundColor(QtGui.QColor(255, 128, 128))
-                    self.tableWidget.item(x,y).setToolTip('Integer only please.')
+                    self.tableWidget.item(x,y).setToolTip('Hex# only please. (ie. 0x1234567F)')
                 y += 1
         x += 1
     
