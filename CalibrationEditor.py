@@ -276,7 +276,7 @@ class Ui_MainWindow(object):
         self.savePushButton.setText(_translate("MainWindow", "Save", None))
         self.previewPushButton.setText(_translate("MainWindow", "Preview", None))
         self.btmLabel.setText(_translate("MainWindow", "Related Documents:", None))
-        self.linkLabel.setText(_translate("MainWindow", "<a href=\"https://atlasop.cern.ch/twiki/bin/view/LAr/LArCalibration\" style=\"color: red;\">TwikiPage</a>", None))
+        self.linkLabel.setText(_translate("MainWindow", "<a href=\"https://pc-atlas-www.cern.ch/twiki/bin/view/LAr/LArCalibration\" style=\"color: red;\">TwikiPage</a>", None))
         self.menuMenu.setTitle(_translate("MainWindow", "Files", None))
         self.actionOpen.setText(_translate("MainWindow", "Open", None))
         self.actionSave.setText(_translate("MainWindow", "Save..", None))
