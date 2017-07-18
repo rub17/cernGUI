@@ -9,10 +9,10 @@ from TableEditor import TableEditor
 
 #  Runyu Bi 06.07.2017 (Pittsburgh)
 
-# ------------------------------------------------------------------------------------                             
+# ------------------------------------------------------------------------------------
 #  GUI for editing parameter.dat files.
 
-# ------------------------------------------------------------------------------------   
+# ------------------------------------------------------------------------------------
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -218,15 +218,15 @@ class Ui_MainWindow(object):
                                                  "border-radius: 10px;\n"
                                                  "background-color: white"))
         self.authorGroupBox.setObjectName(_fromUtf8("authorGroupBox"))
-        
+
         self.authorLineEdit = QtGui.QLineEdit(self.authorGroupBox)
         self.authorLineEdit.setGeometry(QtCore.QRect(70,0,200,25))
-        
+
         self.cmtLineEdit = QtGui.QLineEdit(self.cmtGroupBox)
         self.cmtLineEdit.setGeometry(QtCore.QRect(10, 20, 600, 50))
         self.cmtLineEdit.setStyleSheet("font-size: 20px")
         self.textView = QtGui.QTextEdit()
-        
+
         self.hexToBin = QtGui.QLineEdit(self.patTab)
         self.hexToBin.setGeometry(QtCore.QRect(10, 245, 500, 30))
         font = QtGui.QFont()
@@ -238,7 +238,7 @@ class Ui_MainWindow(object):
         self.hexToBin.setStyleSheet(_fromUtf8("color: rgb(0, 0, 0);\n"
                                                ""))
         self.hexToBin.textEdited.connect(self.convertBin)
-        
+
         self.dacTable = TableEditor(1,1,200,250,self.dacDelay)
         self.dacTable.move(20,0)
         self.dacTable.tableWidget.setHorizontalHeaderLabels(QtCore.QStringList()<<"DAC Value")
@@ -250,12 +250,12 @@ class Ui_MainWindow(object):
         channelLabels = QtCore.QStringList()<<"31-0" <<"63-32" << "95-64" << "127-96"
         self.patTable.tableWidget.setHorizontalHeaderLabels(channelLabels)
         self.patTable.move(10,0)
-            
+
         self.savePushButton.clicked.connect(self.save_File)
         self.abandonPushButton.clicked.connect(self.close_application)
         self.previewPushButton.clicked.connect(self.preview_File)
         self.patTable.tableWidget.cellDoubleClicked.connect(self.convertHex)
-        
+
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -288,7 +288,7 @@ class Ui_MainWindow(object):
         try:
             dialog = QtGui.QMessageBox.warning(self.centralwidget, 'Warning',
             "Please: only save into the UsersArea!!!",QtGui.QMessageBox.Ok)
-            
+
             self.grab_Info()
             if self.textView.document().blockCount() > 1:
                 saveFileName = QtGui.QFileDialog.getSaveFileName(self.centralwidget, 'Saving parameter.dat File','parameter.dat','', '*.dat')
@@ -371,12 +371,12 @@ class Ui_MainWindow(object):
             view.setCentralWidget(self.textView)
             view.setGeometry(QtCore.QRect(450, 100, 400,500))
             view.show()
-    
+
         except AttributeError:
             error = QtGui.QMessageBox.warning(self.centralwidget, 'Error',
                                              "There are empty cells!",
                                              QtGui.QMessageBox.Ok)
-            
+
     def grab_Info(self):
         tables = [self.dacTable,self.delayTable,self.patTable]
         anyEmpty = 0;
@@ -412,7 +412,7 @@ class Ui_MainWindow(object):
             for i in range(0,self.delayTable.tableWidget.rowCount()):
                 list.append(str(self.delayTable.tableWidget.item(i,0).text()))
                 i += 1
-            
+
             writeIn = " ".join(list)
             self.textView.append(writeIn)
         #Writing Patterns:
@@ -430,7 +430,7 @@ class Ui_MainWindow(object):
                 writeIn = writeIn.replace("X","x")
                 self.textView.append(writeIn)
                 a +=1
-        
+
         else:
             error = QtGui.QMessageBox.warning(self.centralwidget, 'Error',
                                               "There are empty cells!",
@@ -444,7 +444,7 @@ class Ui_MainWindow(object):
                            "3":"0011",
                            "4":"0100",
                            "5":"0101",
-                           "6":"0110",    
+                           "6":"0110",
                            "7":"0111",
                            "8":"1000",
                            "9":"1001",
@@ -504,8 +504,9 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     app.setStyle("cleanlooks")
     MainWindow = QtGui.QMainWindow()
+    MainWindow.statusBar().setSizeGripEnabled(0)
+    MainWindow.setFixedSize(635, 760)
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-

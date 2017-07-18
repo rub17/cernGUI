@@ -52,6 +52,11 @@ class Ui_MainWindow(object):
         font.setFamily(_fromUtf8("Helvetica Neue"))
         font.setPointSize(36)
         font.setItalic(False)
+        
+        #self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
+        #self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
+        #self.gridLayout.setMargin(0)
+
         self.titleLabel.setFont(font)
         self.titleLabel.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.titleLabel.setStyleSheet(_fromUtf8("border: 2px solid white;\n"
@@ -249,7 +254,11 @@ class Ui_MainWindow(object):
         channelLabels = QtCore.QStringList()<<"31-0" <<"63-32" << "95-64" << "127-96"
         self.patTable.tableWidget.setHorizontalHeaderLabels(channelLabels)
         self.patTable.move(10,0)
-            
+        
+        #self.gridLayout.addWidget(self.titleLabel,0,0,1,2)
+        #self.gridLayout.addWidget(self.pwdInfo,1,0,1,1)
+        #self.gridLayout.addWidget(self.authorLineEdit,1,1,1,1)
+        
         self.savePushButton.clicked.connect(self.save_File)
         self.abandonPushButton.clicked.connect(self.close_application)
         self.previewPushButton.clicked.connect(self.preview_File)
