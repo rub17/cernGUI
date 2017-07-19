@@ -314,8 +314,8 @@ class Ui_MainWindow(object):
                 for idx,val in enumerate(text):
                     if text[idx].startswith('#'):
                         text.remove(val)
-                text = [element.upper() for element in text]
-                text = [element.replace("X","x") for element in text]
+                text = [element.lower() for element in text]
+                #text = [element.replace("X","x") for element in text]
                 textList = QtCore.QStringList()
                 if text[0].startswith('#'): #Skipping comments
                     position = 1
@@ -426,8 +426,8 @@ class Ui_MainWindow(object):
                     list.append(str(self.patTable.tableWidget.item(a,b).text()))
                     b += 1
                 writeIn = " ".join(list)
-                writeIn = writeIn.upper()
-                writeIn = writeIn.replace("X","x")
+                writeIn = writeIn.lower()
+                #writeIn = writeIn.replace("X","x")
                 self.textView.append(writeIn)
                 a +=1
 
@@ -477,12 +477,12 @@ class Ui_MainWindow(object):
                            "0111":"7",
                            "1000":"8",
                            "1001":"9",
-                           "1010":"A",
-                           "1011":"B",
-                           "1100":"C",
-                           "1101":"D",
-                           "1110":"E",
-                           "1111":"F"}
+                           "1010":"a",
+                           "1011":"b",
+                           "1100":"c",
+                           "1101":"d",
+                           "1110":"e",
+                           "1111":"f"}
             binNumber = self.hexToBin.text()
             value =  str(binNumber).split(" ")
             hex = str("0x" + "".join(bin2hex_map[i] for i in value))
