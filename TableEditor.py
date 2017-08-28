@@ -3,17 +3,20 @@ from PyQt4 import QtCore, QtGui
 class TableEditor(QtGui.QWidget):
 
 
-    def __init__(self, row,col,sizeX,sizeY,*args,**kwargs):
+    def __init__(self,row,col,sizeX,sizeY,which,*args,**kwargs):
         super(TableEditor, self).__init__(*args,**kwargs)
         self.row = row
         self.col = col
         self.sizeX = sizeX
         self.sizeY = sizeY
+        self.which = which #which=1:DAC which=2:Delay which=3:Patterns
         self.initUI()
 
     def initUI(self):
-        self.intValidator = QtGui.QIntValidator()
-        self.intValidator.setRange(0,65535)
+        self.intValidatorDAC = QtGui.QIntValidator()
+        self.intValidatorDAC.setRange(0,65535)
+        self.intValidatorDelay = QtGui.QIntValidator()
+        self.intValidatorDelay.setRange(0,240)
         self.hexValidator = QtGui.QRegExpValidator(QtCore.QRegExp("0x[0-9A-Fa-f]{8}"))
 
         self.tableWidget = QtGui.QTableWidget(self.row,self.col,self)
@@ -23,20 +26,15 @@ class TableEditor(QtGui.QWidget):
         self.tableWidget.setDragEnabled(1)
         self.tableWidget.setAcceptDrops(1)
 
-
-
-
         self.plusBtn = QtGui.QPushButton('+',self)
         self.plusBtn.setToolTip('Adding a row')
         self.plusBtn.resize(self.plusBtn.sizeHint())
         #self.plusBtn.setStyleSheet("background: orange")
 
-
         self.minusBtn = QtGui.QPushButton('-',self)
         self.minusBtn.setToolTip('Removing a row')
         self.minusBtn.resize(self.plusBtn.sizeHint())
         #self.minusBtn.setStyleSheet("border-radius: 5px")
-
 
         self.layoutWidget = QtGui.QWidget(self)
         self.layoutWidget.resize(50,100)
@@ -49,10 +47,13 @@ class TableEditor(QtGui.QWidget):
         self.plusBtn.clicked.connect(self.addRow)
         self.minusBtn.clicked.connect(self.delRow)
         ####Crude Way to Distinguish if DAC/Delay or Pat#####
-        if self.col == 4:
+        if self.which == 1:
+            self.tableWidget.cellChanged.connect(self.checkIntDAC)
+        elif self.which == 2:
+            self.tableWidget.cellChanged.connect(self.checkIntDelay)
+        elif self.which == 3:
             self.tableWidget.cellChanged.connect(self.checkHex)
-        else:
-            self.tableWidget.cellChanged.connect(self.checkInt)
+
     #####################################################
 
 
@@ -64,9 +65,19 @@ class TableEditor(QtGui.QWidget):
         rowPosition = self.tableWidget.rowCount()
         self.tableWidget.removeRow(rowPosition-1)
 
-    def checkTableInt(self):
+    def checkTableIntDAC(self):
         for i in range (0,self.tableWidget.rowCount()):
-            state = self.intValidator.validate(self.tableWidget.item(i,0).text(),0)[0]
+            state = self.intValidatorDAC.validate(self.tableWidget.item(i,0).text(),0)[0]
+            if state == QtGui.QValidator.Acceptable:
+                self.tableWidget.item(i,0).setBackgroundColor(QtGui.QColor(152,251,152))
+            else:
+                self.tableWidget.item(i,0).setBackgroundColor(QtGui.QColor(255, 128, 128))
+                self.tableWidget.item(i,0).setToolTip('Integer only please.')
+            i += 1
+
+    def checkTableIntDelay(self):
+        for i in range (0,self.tableWidget.rowCount()):
+            state = self.intValidatorDAC.validate(self.tableWidget.item(i,0).text(),0)[0]
             if state == QtGui.QValidator.Acceptable:
                 self.tableWidget.item(i,0).setBackgroundColor(QtGui.QColor(152,251,152))
             else:
@@ -86,11 +97,22 @@ class TableEditor(QtGui.QWidget):
                 y += 1
         x += 1
 
-    def checkInt(self):
+    def checkIntDAC(self):
         currentRow = self.tableWidget.currentRow()
         currentCol = self.tableWidget.currentColumn()
         currentItem = QtGui.QTableWidgetItem(self.tableWidget.item(currentRow,currentCol))
-        state = self.intValidator.validate(currentItem.text(),0)[0]
+        state = self.intValidatorDAC.validate(currentItem.text(),0)[0]
+        if state == QtGui.QValidator.Acceptable:
+            self.tableWidget.item(currentRow,currentCol).setBackgroundColor(QtGui.QColor(152,251,152))
+        else:
+            self.tableWidget.item(currentRow,currentCol).setBackgroundColor(QtGui.QColor(255, 128, 128))
+            self.tableWidget.item(currentRow,currentCol).setToolTip('Integer only please.')
+
+    def checkIntDelay(self):
+        currentRow = self.tableWidget.currentRow()
+        currentCol = self.tableWidget.currentColumn()
+        currentItem = QtGui.QTableWidgetItem(self.tableWidget.item(currentRow,currentCol))
+        state = self.intValidatorDelay.validate(currentItem.text(),0)[0]
         if state == QtGui.QValidator.Acceptable:
             self.tableWidget.item(currentRow,currentCol).setBackgroundColor(QtGui.QColor(152,251,152))
         else:

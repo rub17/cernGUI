@@ -10,7 +10,7 @@ from TableEditor import TableEditor
 #  Runyu Bi 06.07.2017 (Pittsburgh)
 
 # ------------------------------------------------------------------------------------
-#  GUI for editing parameter.dat files.
+#  GUI for editing parameters.dat files.
 
 # ------------------------------------------------------------------------------------
 
@@ -27,6 +27,9 @@ try:
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
+
+P1defaultPath  = "/det/lar/project/usersarea/"
+EMFdefaultPath = "/det/lar/usersarea/"
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -141,7 +144,7 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.scene.addText("Please:\n"
                            "Be careful NOT to overwrite \n"
-                           "other parameter.dat files!",font)
+                           "other parameters.dat files!",font)
         self.patGraphicsView.setScene(self.scene)
         self.pwdInfo = QtGui.QLineEdit(self.centralwidget)
         self.pwdInfo.setGeometry(QtCore.QRect(20, 90, 300, 31))
@@ -239,14 +242,14 @@ class Ui_MainWindow(object):
                                                ""))
         self.hexToBin.textEdited.connect(self.convertBin)
 
-        self.dacTable = TableEditor(1,1,200,250,self.dacDelay)
+        self.dacTable = TableEditor(1,1,200,250,1,self.dacDelay)
         self.dacTable.move(20,0)
         self.dacTable.tableWidget.setHorizontalHeaderLabels(QtCore.QStringList()<<"DAC Value")
 
-        self.delayTable = TableEditor(1,1,200,250,self.dacDelay)
+        self.delayTable = TableEditor(1,1,200,250,2,self.dacDelay)
         self.delayTable.move(320,0)
         self.delayTable.tableWidget.setHorizontalHeaderLabels(QtCore.QStringList()<<"Delay Values")
-        self.patTable = TableEditor(1,4,500,220,self.patTab)
+        self.patTable = TableEditor(1,4,500,220,3,self.patTab)
         channelLabels = QtCore.QStringList()<<"31-0" <<"63-32" << "95-64" << "127-96"
         self.patTable.tableWidget.setHorizontalHeaderLabels(channelLabels)
         self.patTable.move(10,0)
@@ -271,7 +274,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.dacDelay), _translate("MainWindow", "DAC/Delay", None))
         self.patGroupBox.setTitle(_translate("MainWindow", "Patterns", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.patTab), _translate("MainWindow", "Patterns", None))
-        self.pwdInfo.setText("Current Path: " + QtCore.QString(QtCore.QDir.currentPath()))
+        self.pwdInfo.setText("Save to: .../LAR_PARTITION/./Calibration/...")
         self.hexToBin.setText(_translate("MainWindow", "Bonjour!", None))
         self.savePushButton.setText(_translate("MainWindow", "Save", None))
         self.previewPushButton.setText(_translate("MainWindow", "Preview", None))
@@ -291,7 +294,17 @@ class Ui_MainWindow(object):
 
             self.grab_Info()
             if self.textView.document().blockCount() > 1:
-                saveFileName = QtGui.QFileDialog.getSaveFileName(self.centralwidget, 'Saving parameter.dat File','parameter.dat','', '*.dat')
+		if QtCore.QDir(P1defaultPath).exists():
+		    defaultPath = P1defaultPath + 'parameters.dat'
+		elif QtCore.QDir(EMFdefaultPath).exists():
+		    defaultPath = EMFdefaultPath + 'parameters.dat'
+		else:
+		    defaultPath = 'parameters.dat'
+
+                saveFileName = QtGui.QFileDialog.getSaveFileName(self.centralwidget,
+								 'Saving parameters.dat File',
+								 defaultPath,'',
+								 '*.dat')
                 if saveFileName:
                     savefile = open(saveFileName,'w')
                     savefile.write(self.textView.toPlainText())
@@ -305,7 +318,7 @@ class Ui_MainWindow(object):
         self.dacTable.tableWidget.blockSignals(True)
         self.delayTable.tableWidget.blockSignals(True)
         self.patTable.tableWidget.blockSignals(True)
-        openFileName = QtGui.QFileDialog.getOpenFileName(self.centralwidget,'Open File','parameter.dat','','*.dat')
+        openFileName = QtGui.QFileDialog.getOpenFileName(self.centralwidget,'Open File','parameters.dat','','*.dat')
         if openFileName:
             file = open(openFileName,'r')
             with file:
@@ -392,7 +405,7 @@ class Ui_MainWindow(object):
             if self.cmtLineEdit.isModified() == 1:#Writing Comments
                 self.textView.append("#" + self.cmtLineEdit.text())
             if self.authorLineEdit.isModified() == 1:#Writing author's name
-                self.textView.append("#Edited by:" + self.authorLineEdit.text())
+                self.textView.append("#Edited by: " + self.authorLineEdit.text())
         #Writing DAC:
             self.textView.append("#Number of DAC values:")
             self.textView.append(str(self.dacTable.tableWidget.rowCount()))#Writing # of DAC
@@ -416,9 +429,9 @@ class Ui_MainWindow(object):
             writeIn = " ".join(list)
             self.textView.append(writeIn)
         #Writing Patterns:
-            self.textView.append("#Number of Partterns:")
+            self.textView.append("#Number of Patterns:")
             self.textView.append(str(self.patTable.tableWidget.rowCount()))#Writing Patterns
-            self.textView.append("#Partterns:")
+            self.textView.append("#Patterns:")
             for a in range(0,self.patTable.tableWidget.rowCount()):
                 #line.clear()
                 list =[]
